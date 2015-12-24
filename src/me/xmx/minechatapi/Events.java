@@ -23,18 +23,14 @@ public class Events implements Listener {
 			ClientManager.addClient(evt.getPlayer().getUniqueId(), evt.getConnection());
 		}
 	}
-	
-	@EventHandler
-	public void onMineChatClientLeave(final EventMineChatClientLeave evt) {
-		if(!evt.isCancelled()) {
-			ClientManager.removeClient(evt.getPlayer().getUniqueId(), evt.getConnection());
-		}
-	}
-	
+
 	@EventHandler
 	public void onPlayerLeaveEvent(final PlayerQuitEvent evt) {
 		final Player player = evt.getPlayer();
 		if(ClientManager.usingMineChat(player)) {
+			final EventMineChatClientLeave clLeave = new EventMineChatClientLeave(player, ClientManager.getConnectionByUUID(player.getUniqueId()));
+			main.getServer().getPluginManager().callEvent(clLeave);
+			//No check for cancelled.. A leave can never be cancelled
 			ClientManager.removeClient(player.getUniqueId(), ClientManager.getConnection(player));
 		}
 	}
